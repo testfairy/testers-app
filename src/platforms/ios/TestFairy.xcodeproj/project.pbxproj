@@ -437,7 +437,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = TestFairy;
-				PROVISIONING_PROFILE = "c52afac0-c963-4a89-b510-c191d96aa51f";
+				PROVISIONING_PROFILE = "356342b2-8e6d-4bfd-8037-94239f6adf0c";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -473,7 +473,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = TestFairy;
-				PROVISIONING_PROFILE = "c52afac0-c963-4a89-b510-c191d96aa51f";
+				PROVISIONING_PROFILE = "356342b2-8e6d-4bfd-8037-94239f6adf0c";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
