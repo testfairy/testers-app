@@ -422,6 +422,11 @@
 				GCC_PREFIX_HEADER = "TestFairy/TestFairy-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = (
+					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
+					"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include",
+					"\"$(BUILT_PRODUCTS_DIR)\"",
+				);
 				INFOPLIST_FILE = "TestFairy/TestFairy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = (
@@ -458,6 +463,11 @@
 				GCC_PREFIX_HEADER = "TestFairy/TestFairy-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = (
+					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
+					"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include",
+					"\"$(BUILT_PRODUCTS_DIR)\"",
+				);
 				INFOPLIST_FILE = "TestFairy/TestFairy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = (
@@ -538,6 +548,11 @@
 				GCC_PREFIX_HEADER = "TestFairy/TestFairy-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = (
+					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
+					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include",
+				);
 				INFOPLIST_FILE = "TestFairy/TestFairy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = (
@@ -617,6 +632,11 @@
 				GCC_PREFIX_HEADER = "TestFairy/TestFairy-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = (
+					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
+					"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include",
+					"\"$(BUILT_PRODUCTS_DIR)\"",
+				);
 				INFOPLIST_FILE = "TestFairy/TestFairy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = (
