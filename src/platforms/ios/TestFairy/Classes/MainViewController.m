@@ -176,6 +176,20 @@
 }
 */
 
+// gilm, open testfairy:// urls in Safari
+- (BOOL) webView:(UIWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+{
+	NSString *url = [[request URL] absoluteString];
+	NSRange range = [url rangeOfString: @"safari:"];
+	if (range.location == 0) {
+		url = [url substringFromIndex:range.length];
+		[[UIApplication sharedApplication] openURL: [[NSURL alloc] initWithString: url]];
+		return NO;
+	}
+	
+	return [super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
+}
+
 @end
 
 @implementation MainCommandDelegate
