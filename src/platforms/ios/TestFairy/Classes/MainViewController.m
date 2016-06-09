@@ -176,7 +176,7 @@
 }
 */
 
-// gilm, open testfairy:// urls in Safari
+// gilm, open safari: urls in safari
 - (BOOL) webView:(UIWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
 {
 	NSString *url = [[request URL] absoluteString];
