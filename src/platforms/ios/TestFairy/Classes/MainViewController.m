@@ -26,6 +26,7 @@
 //
 
 #import "MainViewController.h"
+#import "TFLogReader.h"
 #import <Cordova/CDVUserAgentUtil.h>
 
 #define kCookieURL @"https://my.testfairy.com/register-notification-cookie/?token="
@@ -183,11 +184,41 @@
 	NSRange range = [url rangeOfString: @"safari:"];
 	if (range.location == 0) {
 		url = [url substringFromIndex:range.length];
-		[[UIApplication sharedApplication] openURL: [[NSURL alloc] initWithString: url]];
+		if ([@"http://logs/" isEqualToString:url]) {
+			[self uploadLogs];
+		} else {
+			[[UIApplication sharedApplication] openURL: [[NSURL alloc] initWithString: url]];
+		}
 		return NO;
 	}
 	
 	return [super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
+}
+
+- (void) uploadLogs {
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+		NSArray *logs = [TFLogReader logs];
+		
+		NSError *error = nil;
+		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:logs options:0 error:&error];
+		NSString *length = [NSString stringWithFormat:@"%lu", (unsigned long)jsonData.length];
+		
+		NSString *url = [NSString stringWithFormat:@"%@/my/troubleshooting/logs-analysis", self.startPage];
+		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+		[request setValue:@"application/json" forHTTPHeaderField: @"Content-Type"];
+		[request setValue:length forHTTPHeaderField:@"Content-Length"];
+		[request setTimeoutInterval:30];
+		[request setHTTPMethod:@"POST"];
+		[request setHTTPBody:jsonData];
+
+//		NSLog(@"================");
+//		for (NSString *item in logs) {
+//			NSLog(@"%@", item);
+//		}
+//		NSLog(@"================");
+		
+		[NSURLConnection connectionWithRequest:request delegate:nil];
+	});
 }
 
 @end
