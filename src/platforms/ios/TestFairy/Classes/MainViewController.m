@@ -184,11 +184,12 @@
 	NSRange range = [url rangeOfString: @"safari:"];
 	if (range.location == 0) {
 		url = [url substringFromIndex:range.length];
-		if ([@"http://logs/" isEqualToString:url]) {
-			[self uploadLogs];
-		} else {
-			[[UIApplication sharedApplication] openURL: [[NSURL alloc] initWithString: url]];
-		}
+		[[UIApplication sharedApplication] openURL: [[NSURL alloc] initWithString: url]];
+		return NO;
+	}
+	
+	if ([@"testers-app://get-log" isEqualToString:url]) {
+		[self uploadLogs];
 		return NO;
 	}
 	
@@ -198,9 +199,10 @@
 - (void) uploadLogs {
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 		NSArray *logs = [TFLogReader logs];
+		NSDictionary *data = @{@"logs": logs};
 		
 		NSError *error = nil;
-		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:logs options:0 error:&error];
+		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data options:0 error:&error];
 		NSString *length = [NSString stringWithFormat:@"%lu", (unsigned long)jsonData.length];
 		
 		NSString *url = [NSString stringWithFormat:@"%@/my/troubleshooting/logs-analysis", self.startPage];
