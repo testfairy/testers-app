@@ -212,12 +212,6 @@
 		[request setTimeoutInterval:30];
 		[request setHTTPMethod:@"POST"];
 		[request setHTTPBody:jsonData];
-
-//		NSLog(@"================");
-//		for (NSString *item in logs) {
-//			NSLog(@"%@", item);
-//		}
-//		NSLog(@"================");
 		
 		[NSURLConnection connectionWithRequest:request delegate:nil];
 	});
