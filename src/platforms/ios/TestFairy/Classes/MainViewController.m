@@ -199,22 +199,51 @@
 - (void) uploadLogs {
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 		NSArray *logs = [TFLogReader logs];
-		NSDictionary *data = @{@"logs": logs};
+		NSMutableString *log = [NSMutableString string];
+		for (NSString *item in logs) {
+			[log appendString:item];
+			[log appendString:@"\n"];
+		}
 		
-		NSError *error = nil;
-		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data options:0 error:&error];
-		NSString *length = [NSString stringWithFormat:@"%lu", (unsigned long)jsonData.length];
-		
-		NSString *url = [NSString stringWithFormat:@"%@/my/troubleshooting/logs-analysis", self.startPage];
-		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
-		[request setValue:@"application/json" forHTTPHeaderField: @"Content-Type"];
-		[request setValue:length forHTTPHeaderField:@"Content-Length"];
-		[request setTimeoutInterval:30];
-		[request setHTTPMethod:@"POST"];
-		[request setHTTPBody:jsonData];
-		
-		[NSURLConnection connectionWithRequest:request delegate:nil];
+		NSDictionary *data = @{@"logs": log};
+		[NSURLConnection connectionWithRequest:[self createRequest:data] delegate:nil];
 	});
+}
+
+- (NSURLRequest *) createRequest:(NSDictionary *)requestData {
+	NSString *url = [NSString stringWithFormat:@"%@/my/troubleshooting/logs-analysis", self.startPage];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+	[request setTimeoutInterval:30];
+	[request setHTTPMethod:@"POST"];
+	
+	NSString *boundary = @"EZg2YAjpj1YPo2yp";
+	NSMutableData *body = [NSMutableData data];
+	
+	NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+	[request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+	
+	// add params (all params are strings)
+	for (NSString *param in [requestData allKeys]) {
+		[body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+		[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", param] dataUsingEncoding:NSUTF8StringEncoding]];
+		
+		NSObject *value = [requestData objectForKey:param];
+		if ([value isKindOfClass:[NSData class]]) {
+			// send as binary
+			[body appendData:(NSData *)value];
+			[body appendData:[@"%@\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+		} else {
+			// use string encoding
+			[body appendData:[[NSString stringWithFormat:@"%@\r\n", value] dataUsingEncoding:NSUTF8StringEncoding]];
+		}
+	}
+	
+	[body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+	
+	// setting the body of the post to the reqeust
+	[request setHTTPBody:body];
+	
+	return request;
 }
 
 @end
