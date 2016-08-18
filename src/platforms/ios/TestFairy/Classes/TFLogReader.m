@@ -25,9 +25,14 @@
 	
 	while ((m = aslresponse_next(r)) != NULL) {
 		NSString *msg = @"";
+		NSString * sender = @"";
+		val = asl_get(m, ASL_KEY_SENDER);
+		if (val) {
+			sender = [NSString stringWithUTF8String:val];
+		}
 		
 		val = asl_get(m, ASL_KEY_MSG);
-		if (val) {
+		if (val && [@"installd" isEqualToString:sender]) {
 			// message text
 			msg = [NSString stringWithUTF8String:val];
 			[logs addObject:msg];
