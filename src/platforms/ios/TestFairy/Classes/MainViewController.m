@@ -31,6 +31,10 @@
 
 #define kCookieURL @"https://my.testfairy.com/register-notification-cookie/?token="
 
+@interface MainViewController() <NSURLConnectionDelegate>
+
+@end
+
 @implementation MainViewController
 
 - (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil
@@ -196,17 +200,34 @@
 	return [super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
 }
 
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+	@try {
+		NSError *error;
+		NSString *jsonString = [[NSString alloc] initWithData:data  encoding:NSUTF8StringEncoding];
+		NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+		NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+		NSString *redirect = [responseData objectForKey:@"redirect"];
+		[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:redirect]]];
+	} @catch (NSException * exception) {
+		NSLog(@"TestFairy: Exception when parsing response data");
+	}
+}
+
 - (void) uploadLogs {
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 		NSArray *logs = [TFLogReader logs];
 		NSMutableString *log = [NSMutableString string];
 		for (NSString *item in logs) {
 			[log appendString:item];
-			[log appendString:@"\n"];
+			[log appendString:@"\r\n"];
 		}
-		
+
 		NSDictionary *data = @{@"logs": log};
-		[NSURLConnection connectionWithRequest:[self createRequest:data] delegate:nil];
+		NSURLRequest *request = [self createRequest:data];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[NSURLConnection connectionWithRequest:request delegate:self];
+		});
 	});
 }
 
