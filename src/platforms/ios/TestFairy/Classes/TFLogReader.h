@@ -8,5 +8,5 @@
 #import <Foundation/Foundation.h>
 
 @interface TFLogReader : NSObject
-+ (NSArray *)logs;
++ (NSArray *)logs:(NSArray *)filter;
 @end

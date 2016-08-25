@@ -192,8 +192,9 @@
 		return NO;
 	}
 	
-	if ([@"testers-app://get-log" isEqualToString:url]) {
-		[self uploadLogs];
+	NSString *logUploadPrefix = @"testers-app://get-log";
+	if ([url hasPrefix:logUploadPrefix]) {
+		[self uploadLogs:[self extractSenders:url prefix:logUploadPrefix]];
 		return NO;
 	}
 	
@@ -213,9 +214,9 @@
 	}
 }
 
-- (void) uploadLogs {
+- (void) uploadLogs:(NSArray *)senders {
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-		NSArray *logs = [TFLogReader logs];
+		NSArray *logs = [TFLogReader logs:senders];
 		NSMutableString *log = [NSMutableString string];
 		for (NSString *item in logs) {
 			[log appendString:item];
@@ -265,6 +266,25 @@
 	[request setHTTPBody:body];
 	
 	return request;
+}
+
+- (NSArray *)extractSenders:(NSString *)url prefix:(NSString *)prefix {
+	NSString* senderString = [url substringWithRange:NSMakeRange(prefix.length, url.length - prefix.length)];
+	NSArray *senders = [senderString componentsSeparatedByString:@"/"];
+	NSMutableArray *all = nil;
+	for (NSString *sender in senders) {
+		if (sender == nil || [@"" isEqualToString:sender]) {
+			continue;
+		}
+		
+		if (all == nil) {
+			all = [NSMutableArray array];
+		}
+		
+		[all addObject:sender];
+	}
+	
+	return all;
 }
 
 @end
