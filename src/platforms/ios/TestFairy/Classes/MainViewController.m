@@ -26,9 +26,14 @@
 //
 
 #import "MainViewController.h"
+#import "TFLogReader.h"
 #import <Cordova/CDVUserAgentUtil.h>
 
 #define kCookieURL @"https://my.testfairy.com/register-notification-cookie/?token="
+
+@interface MainViewController() <NSURLConnectionDelegate>
+
+@end
 
 @implementation MainViewController
 
@@ -187,7 +192,99 @@
 		return NO;
 	}
 	
+	NSString *logUploadPrefix = @"testers-app://get-log";
+	if ([url hasPrefix:logUploadPrefix]) {
+		[self uploadLogs:[self extractSenders:url prefix:logUploadPrefix]];
+		return NO;
+	}
+	
 	return [super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+	@try {
+		NSError *error;
+		NSString *jsonString = [[NSString alloc] initWithData:data  encoding:NSUTF8StringEncoding];
+		NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+		NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+		NSString *redirect = [responseData objectForKey:@"redirect"];
+		[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:redirect]]];
+	} @catch (NSException * exception) {
+		NSLog(@"TestFairy: Exception when parsing response data");
+	}
+}
+
+- (void) uploadLogs:(NSArray *)senders {
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+		NSArray *logs = [TFLogReader logs:senders];
+		NSMutableString *log = [NSMutableString string];
+		for (NSString *item in logs) {
+			[log appendString:item];
+			[log appendString:@"\r\n"];
+		}
+
+		NSDictionary *data = @{@"logs": log};
+		NSURLRequest *request = [self createRequest:data];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[NSURLConnection connectionWithRequest:request delegate:self];
+		});
+	});
+}
+
+- (NSURLRequest *) createRequest:(NSDictionary *)requestData {
+	NSString *url = [NSString stringWithFormat:@"%@/my/troubleshooting/logs-analysis", self.startPage];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+	[request setTimeoutInterval:30];
+	[request setHTTPMethod:@"POST"];
+	
+	NSString *boundary = @"EZg2YAjpj1YPo2yp";
+	NSMutableData *body = [NSMutableData data];
+	
+	NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+	[request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+	
+	// add params (all params are strings)
+	for (NSString *param in [requestData allKeys]) {
+		[body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+		[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", param] dataUsingEncoding:NSUTF8StringEncoding]];
+		
+		NSObject *value = [requestData objectForKey:param];
+		if ([value isKindOfClass:[NSData class]]) {
+			// send as binary
+			[body appendData:(NSData *)value];
+			[body appendData:[@"%@\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+		} else {
+			// use string encoding
+			[body appendData:[[NSString stringWithFormat:@"%@\r\n", value] dataUsingEncoding:NSUTF8StringEncoding]];
+		}
+	}
+	
+	[body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+	
+	// setting the body of the post to the reqeust
+	[request setHTTPBody:body];
+	
+	return request;
+}
+
+- (NSArray *)extractSenders:(NSString *)url prefix:(NSString *)prefix {
+	NSString* senderString = [url substringWithRange:NSMakeRange(prefix.length, url.length - prefix.length)];
+	NSArray *senders = [senderString componentsSeparatedByString:@"/"];
+	NSMutableArray *all = nil;
+	for (NSString *sender in senders) {
+		if (sender == nil || [@"" isEqualToString:sender]) {
+			continue;
+		}
+		
+		if (all == nil) {
+			all = [NSMutableArray array];
+		}
+		
+		[all addObject:sender];
+	}
+	
+	return all;
 }
 
 @end
