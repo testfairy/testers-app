@@ -1,7 +1,7 @@
 language: objective-c
 
 install:
-  - sudo npm install -g cordova
+  - sudo npm install -g cordova@5.0.0
   - sudo npm install -g ios-deploy
   - sudo npm install -g ios-sim
 
