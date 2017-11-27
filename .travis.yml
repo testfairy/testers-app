@@ -2,7 +2,7 @@ language: objective-c
 osx_image: xcode7.2
 
 install:
-  - sudo npm install -g cordova
+  - sudo npm install -g cordova@6.5.0
   #- sudo npm install -g ios-deploy
   #- sudo npm install -g ios-sim
 
