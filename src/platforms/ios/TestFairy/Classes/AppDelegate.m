@@ -87,6 +87,10 @@
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:myTypes];
 	}
 
+	[GIDSignIn sharedInstance].clientID = @"178557428658-6dsca3si7oi3ecat048r98s323dmps12.apps.googleusercontent.com";
+	[GIDSignIn sharedInstance].serverClientID = @"178557428658-2k14gt6c3487mgeagh7h9bn8kddnkq8j.apps.googleusercontent.com";
+	[GIDSignIn sharedInstance].delegate = self;
+
     // Set your app's start page by setting the <content src='foo.html' /> tag in config.xml.
     // If necessary, uncomment the line below to override it.
     // self.viewController.startPage = @"index.html";
@@ -94,10 +98,19 @@
     // NOTE: To customize the view's frame size (which defaults to full screen), override
     // [self.viewController viewWillAppear:] in your view controller.
 
+	self.viewController.view.frame = screenBounds;
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
 
     return YES;
+}
+
+- (BOOL)application:(UIApplication *)app
+			openURL:(NSURL *)url
+			options:(NSDictionary<NSString *, id> *)options {
+	return [[GIDSignIn sharedInstance] handleURL:url
+							   sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+									  annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
 }
 
 // this happens while we are running ( in the background, or from within our own app )
@@ -108,6 +121,12 @@
         return NO;
     }
 
+	if ([[GIDSignIn sharedInstance] handleURL:url
+							sourceApplication:sourceApplication
+								   annotation:annotation]) {
+		return YES;
+	}
+	
     [self.viewController processOpenUrl:url];
 
     // all plugins will get the notification, and their handlers will be called
@@ -154,6 +173,15 @@
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
+}
+
+
+#pragma mark - GIDSignInDelegate
+
+- (void)signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user withError:(NSError *)error {
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/signin/google/?idToken=%@", self.viewController.startPage, user.authentication.idToken]];
+	NSURLRequest* loginRequest = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:20.0];
+	[self.viewController.webView loadRequest:loginRequest];
 }
 
 @end

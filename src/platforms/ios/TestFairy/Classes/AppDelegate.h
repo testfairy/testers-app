@@ -28,8 +28,10 @@
 #import <UIKit/UIKit.h>
 
 #import <Cordova/CDVViewController.h>
+#import "MainViewController.h"
+@import GoogleSignIn;
 
-@interface AppDelegate : NSObject <UIApplicationDelegate>{}
+@interface AppDelegate : NSObject <UIApplicationDelegate, GIDSignInDelegate>{}
 
 // invoke string is passed to your app on launch, this is only valid if you
 // edit TestFairy-Info.plist to add a protocol
@@ -37,6 +39,6 @@
 // http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
 
 @property (nonatomic, strong) IBOutlet UIWindow* window;
-@property (nonatomic, strong) IBOutlet CDVViewController* viewController;
+@property (nonatomic, strong) IBOutlet MainViewController* viewController;
 
 @end

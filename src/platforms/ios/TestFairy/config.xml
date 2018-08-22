@@ -26,6 +26,6 @@
     <author email="support@testfairy.com" href="https://www.testfairy.com">
 	TestFairy
     </author>
-    <content src="https://my.testfairy.com" />
+    <content src="https://app.testfairy.com" />
     <access origin="*" />
 </widget>

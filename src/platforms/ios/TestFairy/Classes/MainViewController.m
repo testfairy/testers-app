@@ -31,7 +31,9 @@
 
 #define kCookieURL @"https://my.testfairy.com/register-notification-cookie/?token="
 
-@interface MainViewController() <NSURLConnectionDelegate>
+@import GoogleSignIn;
+
+@interface MainViewController() <NSURLConnectionDelegate, GIDSignInUIDelegate>
 
 @end
 
@@ -50,29 +52,31 @@
     return self;
 }
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-	token = @"";
-	    
-	// callback when push notification token has been received
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenChanged:) name:CDVRemoteNotification object:nil];
-	    
-	// callback when webview cookies changed (check cookie "l")
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cookiesChanged) name:NSHTTPCookieManagerCookiesChangedNotification object:nil];
+- (id)init {
+    if (self = [super init]) {
+		token = @"";
+		
+		// callback when push notification token has been received
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenChanged:) name:CDVRemoteNotification object:nil];
+		
+		// callback when webview cookies changed (check cookie "l")
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cookiesChanged) name:NSHTTPCookieManagerCookiesChangedNotification object:nil];
 
-	// update user-agent
-	NSString *userAgent = [CDVUserAgentUtil originalUserAgent];
-	NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
-	self.baseUserAgent = [userAgent stringByAppendingString: [NSString stringWithFormat:@" TestersApp/%@", version]];
+		// update user-agent
+		NSString *userAgent = [CDVUserAgentUtil originalUserAgent];
+		NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
+		self.baseUserAgent = [userAgent stringByAppendingString: [NSString stringWithFormat:@" TestersApp/%@", version]];
     }
 	
     return self;
 }
 
-- (void)tokenChanged:(NSNotification *)tokenObject
-{
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	[GIDSignIn sharedInstance].uiDelegate = self;
+}
+
+- (void)tokenChanged:(NSNotification *)tokenObject {
 	if ([[tokenObject object] isKindOfClass:[NSString class]]) {
 		token = [tokenObject object];
 	}
@@ -118,20 +122,6 @@
 		[request setAllHTTPHeaderFields:headers];
 		[NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {}];
 	}
-}
-
-- (void)viewDidLoad
-{
-	// viewDidLoad creates self.webView
-	[super viewDidLoad];
-
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -185,6 +175,7 @@
 - (BOOL) webView:(UIWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
 {
 	NSString *url = [[request URL] absoluteString];
+	NSLog(@"URL %@", url);
 	NSRange range = [url rangeOfString: @"safari:"];
 	if (range.location == 0) {
 		url = [url substringFromIndex:range.length];
@@ -195,6 +186,11 @@
 	NSString *logUploadPrefix = @"testers-app://get-log";
 	if ([url hasPrefix:logUploadPrefix]) {
 		[self uploadLogs:[self extractSenders:url prefix:logUploadPrefix]];
+		return NO;
+	}
+	
+	if ([url containsString:@"/signup/google/"]) {
+		[[GIDSignIn sharedInstance] signIn];
 		return NO;
 	}
 	
@@ -285,6 +281,18 @@
 	}
 	
 	return all;
+}
+
+#pragma mark - GIDSignInUIDelegate
+
+// Present a view that prompts the user to sign in with Google
+- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+	[self presentViewController:viewController animated:YES completion:nil];
+}
+
+// Dismiss the "Sign in with Google" view
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
