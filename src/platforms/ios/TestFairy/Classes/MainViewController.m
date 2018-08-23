@@ -194,6 +194,10 @@
 		return NO;
 	}
 	
+	if ([url containsString:@"/logout/"]) {
+		[[GIDSignIn sharedInstance] signOut];
+	}
+	
 	return [super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
 }
 
