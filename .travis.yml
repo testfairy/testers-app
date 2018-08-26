@@ -8,11 +8,9 @@ install:
 
 before_script:
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/apple.cer.enc -d -a -out scripts/certs/apple.cer
-  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-dev.cer.enc -d -a -out scripts/certs/cert-dev.cer
-  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-dev.p12.enc -d -a -out scripts/certs/cert-dev.p12
+  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert.cer.enc -d -a -out scripts/certs/cert.cer
+  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert.p12.enc -d -a -out scripts/certs/cert.p12
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-dev.mobileprovision.enc -d -a -out scripts/certs/cert-dev.mobileprovision
-  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-adhoc.cer.enc -d -a -out scripts/certs/cert-adhoc.cer
-  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-adhoc.p12.enc -d -a -out scripts/certs/cert-adhoc.p12
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-adhoc.mobileprovision.enc -d -a -out scripts/certs/cert-adhoc.mobileprovision
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-appstore.mobileprovision.enc -d -a -out scripts/certs/cert-appstore.mobileprovision
 
@@ -22,10 +20,8 @@ before_script:
   - security set-keychain-settings -t 3600 -l ~/Library/Keychains/ios-build.keychain
 
   - security import scripts/certs/apple.cer -k ~/Library/Keychains/ios-build.keychain -T /usr/bin/codesign
-  - security import scripts/certs/cert-dev.cer -k ~/Library/Keychains/ios-build.keychain -T /usr/bin/codesign
-  - security import scripts/certs/cert-dev.p12 -k ~/Library/Keychains/ios-build.keychain -P $KEY_PASSWORD -T /usr/bin/codesign
-  - security import scripts/certs/cert-adhoc.cer -k ~/Library/Keychains/ios-build.keychain -T /usr/bin/codesign
-  - security import scripts/certs/cert-adhoc.p12 -k ~/Library/Keychains/ios-build.keychain -P $KEY_PASSWORD -T /usr/bin/codesign
+  - security import scripts/certs/cert.cer -k ~/Library/Keychains/ios-build.keychain -T /usr/bin/codesign
+  - security import scripts/certs/cert.p12 -k ~/Library/Keychains/ios-build.keychain -P $KEY_PASSWORD -T /usr/bin/codesign
 
   - mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
   - cp scripts/certs/cert-dev.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
