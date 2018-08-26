@@ -10,6 +10,8 @@ before_script:
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/apple.cer.enc -d -a -out scripts/certs/apple.cer
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert.cer.enc -d -a -out scripts/certs/cert.cer
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert.p12.enc -d -a -out scripts/certs/cert.p12
+  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-dev.cer.enc -d -a -out scripts/certs/cert-dev.cer
+  - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-dev.p12.enc -d -a -out scripts/certs/cert-dev.p12
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-dev.mobileprovision.enc -d -a -out scripts/certs/cert-dev.mobileprovision
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-adhoc.mobileprovision.enc -d -a -out scripts/certs/cert-adhoc.mobileprovision
   - openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/cert-appstore.mobileprovision.enc -d -a -out scripts/certs/cert-appstore.mobileprovision
@@ -18,10 +20,11 @@ before_script:
   - security default-keychain -s ios-build.keychain
   - security unlock-keychain -p travis ios-build.keychain
   - security set-keychain-settings -t 3600 -l ~/Library/Keychains/ios-build.keychain
-
   - security import scripts/certs/apple.cer -k ~/Library/Keychains/ios-build.keychain -T /usr/bin/codesign
   - security import scripts/certs/cert.cer -k ~/Library/Keychains/ios-build.keychain -T /usr/bin/codesign
   - security import scripts/certs/cert.p12 -k ~/Library/Keychains/ios-build.keychain -P $KEY_PASSWORD -T /usr/bin/codesign
+  - security import scripts/certs/cert-dev.cer -k ~/Library/Keychains/ios-build.keychain -T /usr/bin/codesign
+  - security import scripts/certs/cert-dev.p12 -k ~/Library/Keychains/ios-build.keychain -P $KEY_PASSWORD -T /usr/bin/codesign
 
   - mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
   - cp scripts/certs/cert-dev.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
@@ -40,11 +43,10 @@ deploy:
   provider: releases
   api_key:
     secure: lHIYw1cWUAsV4U9089W0lQcTlI/2vyeL5Kia+JgyU6Rg58iGCpLR6Y6qm+VYvp6fE/84usU6CTIxEhyxqA6D9nzpVlAjES7N8q/UASXtn8wXIV4VqycxqratKx4MrY0ML0vVifE39/sw1wpMeAbGjSRxuypiXufpfoE4t1tj1NQ=
-  file: 
+  file:
     - src/build/TestFairy-AdHoc.ipa
     - src/build/TestFairy-AppStore.ipa
   skip_cleanup: true
   on:
     tags: true
     all_branches: true
-

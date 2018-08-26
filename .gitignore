@@ -2,3 +2,4 @@
 *.swp
 xcuserdata
 project.xcworkspace
+src/build
