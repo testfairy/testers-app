@@ -179,7 +179,7 @@
 #pragma mark - GIDSignInDelegate
 
 - (void)signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user withError:(NSError *)error {
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/signin/google/?idToken=%@", self.viewController.startPage, user.authentication.idToken]];
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/login/with/google/?idToken=%@", self.viewController.startPage, user.authentication.idToken]];
 	NSURLRequest* loginRequest = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:20.0];
 	[self.viewController.webView loadRequest:loginRequest];
 }
