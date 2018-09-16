@@ -77,7 +77,6 @@
 #else
         self.viewController = [[[MainViewController alloc] init] autorelease];
 #endif
-	
 	if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
 		UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeAlert|UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound) categories:nil];
 		[[UIApplication sharedApplication] registerUserNotificationSettings:settings];

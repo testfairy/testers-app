@@ -619,7 +619,11 @@
 
     self.webView = [self newCordovaViewWithFrame:webViewBounds];
     self.webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+	if (@available(iOS 11.0, *)) {
+		[self.webView.scrollView setContentInsetAdjustmentBehavior:UIScrollViewContentInsetAdjustmentNever];
+	}
 
+//	self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever
     [self.view addSubview:self.webView];
     [self.view sendSubviewToBack:self.webView];
 }
