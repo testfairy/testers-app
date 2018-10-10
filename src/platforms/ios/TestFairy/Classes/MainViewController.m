@@ -64,7 +64,7 @@
 
 		// update user-agent
 		NSString *userAgent = [CDVUserAgentUtil originalUserAgent];
-		NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
+		NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 		self.baseUserAgent = [userAgent stringByAppendingString: [NSString stringWithFormat:@" TestersApp/%@", version]];
     }
 	
