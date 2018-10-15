@@ -28,8 +28,7 @@
 #import "MainViewController.h"
 #import "TFLogReader.h"
 #import <Cordova/CDVUserAgentUtil.h>
-
-#define kCookieURL @"https://my.testfairy.com/register-notification-cookie/?token="
+#import <AdSupport/ASIdentifierManager.h>
 
 @import GoogleSignIn;
 
@@ -112,16 +111,37 @@
 		}
 	}
 	
-	if (cookie && token && [token isKindOfClass:[NSString class]]) {
-		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kCookieURL, [token stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
-
-		NSArray* cookies = [NSArray arrayWithObjects: cookie, nil];
-	
-		NSDictionary *headers = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-	
-		[request setAllHTTPHeaderFields:headers];
-		[NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {}];
+	if (cookie) {
+		if (token && [token isKindOfClass:[NSString class]]) {
+			[self registerToken:cookie];
+		}
+		
+		[self registerAdvertisingId:cookie];
 	}
+}
+
+- (void)registerToken:(NSHTTPCookie *)cookie {
+	NSURL *cookieUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@/register-notification-cookie/?token=%@", self.startPage, [token stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+	
+	[self makeRequestToUrl:cookieUrl withCookies:cookie];
+}
+
+- (void)registerAdvertisingId:(NSHTTPCookie *)cookie {
+	NSString *adId = [ASIdentifierManager sharedManager].advertisingIdentifier.UUIDString;
+	if (adId == nil || ! [ASIdentifierManager sharedManager].advertisingTrackingEnabled) {
+		return;
+	}
+	
+	NSURL *adIdUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@/register-advertiser-identifiers/id=%@", self.startPage, adId]];
+	[self makeRequestToUrl:adIdUrl withCookies:cookie];
+}
+
+- (void)makeRequestToUrl:(NSURL *)url withCookies:(NSHTTPCookie *)cookie {
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+	NSArray* cookies = [NSArray arrayWithObjects: cookie, nil];
+	NSDictionary *headers = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+	[request setAllHTTPHeaderFields:headers];
+	[NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {}];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
