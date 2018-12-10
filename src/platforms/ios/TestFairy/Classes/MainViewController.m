@@ -26,7 +26,6 @@
 //
 
 #import "MainViewController.h"
-#import "TFLogReader.h"
 #import <Cordova/CDVUserAgentUtil.h>
 #import <AdSupport/ASIdentifierManager.h>
 
@@ -203,12 +202,6 @@
 		return NO;
 	}
 	
-	NSString *logUploadPrefix = @"testers-app://get-log";
-	if ([url hasPrefix:logUploadPrefix]) {
-		[self uploadLogs:[self extractSenders:url prefix:logUploadPrefix]];
-		return NO;
-	}
-	
 	if ([url containsString:@"/signup/google/"]) {
 		[[GIDSignIn sharedInstance] signIn];
 		return NO;
@@ -232,24 +225,6 @@
 	} @catch (NSException * exception) {
 		NSLog(@"TestFairy: Exception when parsing response data");
 	}
-}
-
-- (void) uploadLogs:(NSArray *)senders {
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-		NSArray *logs = [TFLogReader logs:senders];
-		NSMutableString *log = [NSMutableString string];
-		for (NSString *item in logs) {
-			[log appendString:item];
-			[log appendString:@"\r\n"];
-		}
-
-		NSDictionary *data = @{@"logs": log};
-		NSURLRequest *request = [self createRequest:data];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[NSURLConnection connectionWithRequest:request delegate:self];
-		});
-	});
 }
 
 - (NSURLRequest *) createRequest:(NSDictionary *)requestData {
