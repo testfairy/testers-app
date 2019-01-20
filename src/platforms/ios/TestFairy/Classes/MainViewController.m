@@ -195,12 +195,6 @@
 {
 	NSString *url = [[request URL] absoluteString];
 	NSLog(@"URL %@", url);
-	NSRange range = [url rangeOfString: @"safari:"];
-	if (range.location == 0) {
-		url = [url substringFromIndex:range.length];
-		[[UIApplication sharedApplication] openURL: [[NSURL alloc] initWithString: url]];
-		return NO;
-	}
 	
 	if ([url containsString:@"/signup/google/"]) {
 		[[GIDSignIn sharedInstance] signIn];
