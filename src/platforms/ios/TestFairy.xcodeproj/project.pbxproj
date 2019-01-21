@@ -28,7 +28,6 @@
 		30B4F30219D5E07200D9F7D8 /* Default-Landscape-736h.png in Resources */ = {isa = PBXBuildFile; fileRef = 30B4F2FF19D5E07200D9F7D8 /* Default-Landscape-736h.png */; };
 		30C1856619D5FC0A00212699 /* icon-60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C1856519D5FC0A00212699 /* icon-60@3x.png */; };
 		30FC414916E50CA1004E6F35 /* icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC414816E50CA1004E6F35 /* icon-72@2x.png */; };
-		421E4F24216FAE92007AB8F2 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 421E4F23216FAE92007AB8F2 /* AdSupport.framework */; };
 		4247A354212D9F3400F86412 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4247A351212D9F3400F86412 /* GoogleSignIn.bundle */; };
 		4247A355212D9F3400F86412 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4247A352212D9F3400F86412 /* GoogleSignIn.framework */; };
 		4247A356212D9F3400F86412 /* GoogleSignInDependencies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4247A353212D9F3400F86412 /* GoogleSignInDependencies.framework */; };
@@ -128,7 +127,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				421E4F24216FAE92007AB8F2 /* AdSupport.framework in Frameworks */,
 				4247A35C212D9F8700F86412 /* SystemConfiguration.framework in Frameworks */,
 				4247A35A212D9F7800F86412 /* SafariServices.framework in Frameworks */,
 				4247A358212D9F6B00F86412 /* LocalAuthentication.framework in Frameworks */,

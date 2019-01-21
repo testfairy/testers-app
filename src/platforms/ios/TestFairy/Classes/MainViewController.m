@@ -27,7 +27,7 @@
 
 #import "MainViewController.h"
 #import <Cordova/CDVUserAgentUtil.h>
-#import <AdSupport/ASIdentifierManager.h>
+//#import <AdSupport/ASIdentifierManager.h>
 
 @import GoogleSignIn;
 
@@ -126,8 +126,8 @@
 }
 
 - (void)registerAdvertisingId:(NSHTTPCookie *)cookie {
-	NSString *adId = [ASIdentifierManager sharedManager].advertisingIdentifier.UUIDString;
-	if (adId == nil || ! [ASIdentifierManager sharedManager].advertisingTrackingEnabled) {
+	NSString *adId = nil; //[ASIdentifierManager sharedManager].advertisingIdentifier.UUIDString;
+	if (adId == nil) { // || ! [ASIdentifierManager sharedManager].advertisingTrackingEnabled
 		return;
 	}
 	
