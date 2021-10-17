@@ -8,9 +8,7 @@ import WebKit
 
 struct ContentView: View {
     var body: some View {
-//        let url = URL(string: "https://localhost.testfairy.net")!
-        let url = URL(string: "https://app.testfairy.com")!
-        Webview(url: url)
+        Webview(url: URL(string: "https://app.testfairy.com")!)
     }
 }
 
