@@ -49,7 +49,10 @@ class ViewController: UIViewController {
             ])
         }
         
-        let request = URLRequest(url: URL(string: TESTFAIRY_URL)!, cachePolicy: .reloadIgnoringLocalCacheData)
+        let request = URLRequest(
+            url: URL(string: TESTFAIRY_URL)!,
+            cachePolicy: .reloadIgnoringLocalCacheData
+        )
         webView.load(request)
     }
 }
@@ -138,7 +141,6 @@ class WebViewUIDelegate: NSObject, WKUIDelegate {
             } else {
                 completionHandler(defaultText)
             }
-
         }))
 
         alertController.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
